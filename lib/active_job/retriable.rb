@@ -12,10 +12,10 @@ module ActiveJob
       rescue_from Exception do |ex|
         tag_logger self.class.name, job_id do
           if retries_exhausted?
-            logger.info 'Retries exhauseted'
+            logger.info "Retries exhauseted at #{retry_attempt}"
 
           else
-            logger.warn "Retrying due to #{ex.message}"
+            logger.warn "Retrying due to #{ex.message} on #{ex.backtrace.try(:first)}"
 
             retry_job wait: retry_delay unless retries_exhausted?
           end
