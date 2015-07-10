@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activejob_retriable (0.0.1)
+    activejob-retriable (0.0.1)
       activejob (~> 4.2.3)
 
 GEM
@@ -142,7 +142,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activejob_retriable!
+  activejob-retriable!
   guard
   guard-minitest
   rails (~> 4.2.3)
