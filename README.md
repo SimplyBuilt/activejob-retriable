@@ -36,8 +36,8 @@ following:
    Alternatively, you can just include the helper on a test-by-test
 basis
 
-3. If you're using ActiveJob assertions in controllers, be sure to
-   include the test helper concern there as well
+3. If you're using ActiveJob assertions in controllers or elsewhere, be
+   sure to include the test helper concern there as well
 
 4. *Optionally* add a setup and teardown block to toggle on
    `reraise_when_retry_exhausted`
