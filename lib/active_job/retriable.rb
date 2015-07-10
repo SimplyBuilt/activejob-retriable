@@ -51,7 +51,7 @@ module ActiveJob
       attr_accessor :retry_max
 
       def max_retry(max)
-        self.retry_max = max
+        self.retry_max = max || 0
       end
     end
 
