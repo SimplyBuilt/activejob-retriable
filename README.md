@@ -1,4 +1,4 @@
-# ActiveJob::Retriable
+# ActiveJob::Retriable ![Build Status](https://travis-ci.org/SimplyBuilt/activejob-retriable.svg)
 
 Automatically retry failed jobs with an exponential back-off.
 
