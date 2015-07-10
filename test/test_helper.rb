@@ -18,30 +18,8 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures :all
 end
 
-class ActiveSupport::TestCase
-  include ActiveJob::TestHelper
-end
+require 'active_job/retriable/test_helper'
 
-# Use our TestAdapter since it is unaware of custom
-# serialization
-module ActiveJob::QueueAdapters
-  class RetriableTestAdapter < TestAdapter
-    def enqueue(job)
-      process_job_and_data job, job.serialize
-    end
-
-    def enqueue_at(job, timestamp)
-      process_job_and_data job, job.serialize.update('at' => timestamp)
-    end
-
-    def process_job_and_data(job, job_data)
-      if perform_enqueued_jobs
-        ActiveJob::Base.perform_now job
-
-        performed_jobs << job_data
-      else
-        enqueued_jobs << job_data
-      end
-    end
-  end
+class ActiveJob::TestCase
+  include ActiveJob::Retriable::TestHelper
 end

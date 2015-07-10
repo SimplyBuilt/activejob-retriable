@@ -4,21 +4,40 @@ module ActiveJob
   module Retriable
     extend ActiveSupport::Concern
 
-    DEFAULT_MAX    = 25
+    BASE_TAG = self.name
     DEFAULT_FACTOR = 4
+    DEFAULT_MAX    = 25
+
+    @reraise_when_retry_exhausted = false
+
+    def self.reraise_when_retry_exhausted=(option)
+      @reraise_when_retry_exhausted = !!option
+    end
+
+    def self.reraise_when_retry_exhausted?
+      @reraise_when_retry_exhausted
+    end
 
     included do
+      raise 'Adapter does not support enqueue_at method' unless self.queue_adapter.respond_to?(:enqueue_at)
+
+      delegate :reraise_when_retry_exhausted?, to: 'ActiveJob::Retriable'
+
       # TODO think about how to handle ActiveJob::DeserializationError
       rescue_from Exception do |ex|
-        tag_logger self.class.name, job_id do
-          if retries_exhausted?
-            logger.info "Retries exhauseted at #{retry_attempt}"
+        tags = "[#{BASE_TAG}] [#{self.class.name}] [#{job_id}]"
 
-          else
-            logger.warn "Retrying due to #{ex.message} on #{ex.backtrace.try(:first)}"
+        # NOTE we avoid using the tag_logger method so we don't end up
+        # with recursively tagged logs in when in test mode
+        if retries_exhausted?
+          logger.info "#{tags} Retries exhauseted at #{retry_attempt} #{reraise_when_retry_exhausted?}"
 
-            retry_job wait: retry_delay unless retries_exhausted?
-          end
+          raise if reraise_when_retry_exhausted?
+
+        else
+          logger.warn "#{tags} Retrying due to #{ex.message} on #{ex.backtrace.try(:first)}"
+
+          retry_job wait: retry_delay unless retries_exhausted?
         end
       end
 
