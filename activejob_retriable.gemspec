@@ -5,7 +5,7 @@ require "active_job/retriable/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "activejob_retriable"
+  s.name        = "activejob-retriable"
   s.version     = ActiveJob::Retriable::VERSION
   s.authors     = ["Michael Coyne"]
   s.email       = ["mikeycgto@gmail.com"]
