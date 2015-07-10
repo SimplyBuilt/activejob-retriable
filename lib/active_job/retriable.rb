@@ -23,6 +23,7 @@ module ActiveJob
       end
 
       before_perform do
+        @retry_attempt ||= 0
         @retry_attempt += 1
       end
     end
