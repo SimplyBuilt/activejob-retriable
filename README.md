@@ -5,6 +5,15 @@ Automatically retry failed jobs with an exponential back-off.
 This gem is aims to mimic most of the functionality of Sidekiq's
 RetryJobs middleware.
 
+## Support
+
+Backends that support the `enqueued_at` method are supported. A
+Runtime exeception is raised if this concern is included in a job with
+an unsupported backend.
+
+Test gem has only been tested with the Sidekiq backend. Please submit
+pull-requests and issues for backends that are not functioning properly.
+
 ## Testing
 
 The default `ActiveJob::QueueAdapters::TestAdapter` does not call
