@@ -20,7 +20,9 @@ The motivation of this gem is to play nicely with existing `rescue_from`
 blocks within your job classes. If your `rescue_from` blocks call
 `retry_job` is it probably best to call this method if and only if
 `retries_exhausted?` is not `true`. Otherwise, your jobs may be retried
-indefinitely!
+indefinitely! See this [test job
+class](https://github.com/SimplyBuilt/activejob-retriable/blob/master/test/dummy/app/jobs/rescue_job.rb#L8)
+for an example.
 
 ## Testing
 
