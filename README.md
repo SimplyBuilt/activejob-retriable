@@ -2,14 +2,14 @@
 
 Automatically retry failed jobs with an exponential back-off.
 
-This gem is aims to mimic most of the functionality of Sidekiq's
+This gem aims to mimic most of the functionality of Sidekiq's
 RetryJobs middleware.
 
 ## Support
 
 Backends that support the retrying jobs are supported. A Runtime
-exeception is raised if this concern is included in a job with
-an unsupported backend.
+exception is raised if this concern is included in a job class
+with an unsupported backend.
 
 The gem has only been tested with the Sidekiq backend. Please submit
 pull-requests and issues for backends that are not functioning properly.
@@ -68,6 +68,16 @@ basis.
         teardown do
           ActiveJob::Retriable.reraise_when_retry_exhausted = false
         end
+
+## Adapter Notes & Tips
+
+- With _Sidekiq_, we highly encourage that you remove the RetryJobs
+  middleware. This can be done in an initializer with the following:
+
+        Sidekiq.configure_server do |config|
+          config.server_middleware.remove Sidekiq::Middleware::Server::RetryJobs
+        end
+
 
 ## LICENSE
 
