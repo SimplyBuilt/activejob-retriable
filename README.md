@@ -71,7 +71,7 @@ basis.
 
 ## Adapter Notes & Tips
 
-- With _Sidekiq_, we highly encourage that you remove the RetryJobs
+- With **Sidekiq**, we highly encourage that you remove the RetryJobs
   middleware. This can be done in an initializer with the following:
 
         Sidekiq.configure_server do |config|
