@@ -24,6 +24,15 @@ indefinitely! See this [test job
 class](https://github.com/SimplyBuilt/activejob-retriable/blob/master/test/dummy/app/jobs/rescue_job.rb#L8)
 for an example.
 
+## Advanced Usage
+
+It is possible to overload or redefine both `retry_delay` and
+`retries_exhausted?` to include custom logic. This means it is easy to
+implement different back-off strategies as well as more advanced
+exhausted logic.
+
+Feel free to open PR's with more advanced examples!
+
 ## Testing
 
 The default `ActiveJob::QueueAdapters::TestAdapter` does not call
