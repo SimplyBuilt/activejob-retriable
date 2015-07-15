@@ -30,20 +30,18 @@ module ActiveJob
         # NOTE we avoid using the tag_logger method so we don't end up
         # with recursively tagged logs in when in test mode
         if retries_exhausted?
-          logger.info "#{tags} Retries exhauseted at #{retry_attempt} #{reraise_when_retry_exhausted?}"
+          logger.info "#{tags} Retries exhauseted at #{retry_attempt} attempts"
 
           raise if reraise_when_retry_exhausted?
-
         else
-          logger.warn "#{tags} Retrying due to #{ex.message} on #{ex.backtrace.try(:first)}"
+          logger.warn "#{tags} Retrying due to #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
 
-          retry_job wait: retry_delay unless retries_exhausted?
+          retry_job wait: retry_delay
         end
       end
 
       before_perform do
-        @retry_attempt ||= 0
-        @retry_attempt += 1
+        self.retry_attempt += 1
       end
     end
 
@@ -55,26 +53,31 @@ module ActiveJob
       end
     end
 
+    attr_writer :retry_attempt
+
     def retries_exhausted?
-      retry_attempt > (self.class.retry_max || DEFAULT_MAX)
+      retry_attempt >= (self.class.retry_max || DEFAULT_MAX)
     end
 
     def retry_delay
-      (retry_attempt ** DEFAULT_FACTOR) + (rand(30) * retry_attempt)
+      1
+      #(retry_attempt ** DEFAULT_FACTOR) + (rand(30) * retry_attempt)
     end
 
     def retry_attempt
-      @retry_attempt ||= 1
+      @retry_attempt ||= 0
     end
 
     def serialize
       super.update 'retry_attempt' => retry_attempt
     end
 
+    # Rails 5 deserialization approach
+    # NOTE the conditional will be removed with Rails 5
     def deserialize(job_data)
       super job_data
 
-      @retry_attempt = job_data['retry_attempt']
-    end
+      self.retry_attempt = job_data['retry_attempt']
+    end if instance_methods.include?(:deserialize)
   end
 end
