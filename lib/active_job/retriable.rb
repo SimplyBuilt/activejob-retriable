@@ -60,8 +60,7 @@ module ActiveJob
     end
 
     def retry_delay
-      1
-      #(retry_attempt ** DEFAULT_FACTOR) + (rand(30) * retry_attempt)
+      (retry_attempt ** DEFAULT_FACTOR) + (rand(30) * retry_attempt)
     end
 
     def retry_attempt
