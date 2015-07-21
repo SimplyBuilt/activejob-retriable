@@ -69,6 +69,11 @@ basis.
           ActiveJob::Retriable.reraise_when_retry_exhausted = false
         end
 
+Additionally, if you have jobs being enqueued in your `setup` blocks, it
+is highly recommended that you move that functionality to an
+`after_setup` method. This is due to how the default `TestHelper` works
+and may change in the future.
+
 ## Adapter Notes & Tips
 
 - With **Sidekiq**, we highly encourage that you remove the RetryJobs
