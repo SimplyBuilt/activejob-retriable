@@ -42,4 +42,11 @@ class ActiveJob::Retriable::TestAdapterTest < ActiveJob::TestCase
 
     assert_instance_of ActiveSupport::HashWithIndifferentAccess, performed_jobs.first
   end
+
+  test 'deserialize monkey patch sets retry_attempt' do
+    job_data = { 'job_class' => 'RescueJob', 'retry_attempt' => 12 }
+    job = RescueJob.deserialize(job_data)
+
+    assert_equal 12, job.retry_attempt
+  end
 end
