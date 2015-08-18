@@ -24,6 +24,21 @@ indefinitely! See this [test job
 class](https://github.com/SimplyBuilt/activejob-retriable/blob/master/test/dummy/app/jobs/rescue_job.rb#L8)
 for an example.
 
+## Retriable with ActionMailer
+
+If you want `ActionMailer` delivery jobs to use `Retriable`, you have to
+reopen the `ActionMailer::DeliveryJob` class and manually include the
+concern. For example:
+
+    module ActionMailer
+      class DeliveryJob
+        include ActiveJob::Retriable
+      end
+    end
+
+It is recommended to do this via an initializer. We're open to
+suggestions on how to improve this aspect of `Retriable` though!
+
 ## Advanced Usage
 
 It is possible to overload or redefine both `retry_delay` and
