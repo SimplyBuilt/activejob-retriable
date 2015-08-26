@@ -24,6 +24,17 @@ indefinitely! See this [test job
 class](https://github.com/SimplyBuilt/activejob-retriable/blob/master/test/dummy/app/jobs/rescue_job.rb#L8)
 for an example.
 
+## Exception Callbacks
+
+Much like `ActiveJob` itself, retriable introduces some callbacks for
+exception handling. Your job class can define `before_exception`,
+`after_exception` and `around_exception` callbacks.
+
+Retriable will also set the value of `current_exception` to the actual
+exception. This way, direct access to the exception is possible from
+within a callback. This may be useful for error reporting and other
+needs.
+
 ## Retriable with ActionMailer
 
 If you want `ActionMailer` delivery jobs to use `Retriable`, you have to
