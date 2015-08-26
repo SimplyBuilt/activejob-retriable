@@ -3,6 +3,7 @@ require 'active_job/retriable/version'
 module ActiveJob
   module Retriable
     extend ActiveSupport::Concern
+    include ActiveSupport::Callbacks
 
     BASE_TAG = self.name
     DEFAULT_FACTOR = 4
@@ -22,21 +23,26 @@ module ActiveJob
       raise 'Adapter does not support enqueue_at method' unless self.queue_adapter.respond_to?(:enqueue_at)
 
       delegate :reraise_when_retry_exhausted?, to: 'ActiveJob::Retriable'
+      define_callbacks :exception
+
+      base = "[#{BASE_TAG}] [#{self.class.name}]"
 
       # TODO think about how to handle ActiveJob::DeserializationError
       rescue_from Exception do |ex|
-        tags = "[#{BASE_TAG}] [#{self.class.name}] [#{job_id}]"
+        self.current_exception = ex
 
-        # NOTE we avoid using the tag_logger method so we don't end up
+        # Avoid using the tag_logger method so we don't end up
         # with recursively tagged logs in when in test mode
-        if retries_exhausted?
-          logger.info "#{tags} Retries exhauseted at #{retry_attempt} attempts"
+        run_callbacks :exception do
+          if retries_exhausted?
+            logger.info "[#{base}] [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
 
-          raise if reraise_when_retry_exhausted?
-        else
-          logger.warn "#{tags} Retrying due to #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
+            raise if reraise_when_retry_exhausted?
+          else
+            logger.warn "[#{base}] [#{job_id}] Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
 
-          retry_job wait: retry_delay
+            retry_job wait: retry_delay
+          end
         end
       end
 
@@ -51,9 +57,22 @@ module ActiveJob
       def max_retry(max)
         self.retry_max = max || 0
       end
+
+      def before_exception(*filters, &blk)
+        set_callback :exception, :before, *filters, &blk
+      end
+
+      def after_exception(*filters, &blk)
+        set_callback :exception, :after, *filters, &blk
+      end
+
+      def around_exception(*filters, &blk)
+        set_callback :exception, :around, *filters, &blk
+      end
     end
 
     attr_writer :retry_attempt
+    attr_accessor :current_exception
 
     def retries_exhausted?
       retry_attempt >= (self.class.retry_max || DEFAULT_MAX)

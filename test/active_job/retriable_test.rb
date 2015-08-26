@@ -28,13 +28,30 @@ class ActiveJob::RetriableTest < ActiveJob::TestCase
     assert_equal 2, performed_jobs.map { |job| job['at'] }.compact.size
   end
 
+  test 'invokes all callbacks' do
+    CallbacksJob.reset_results!
+
+    perform_enqueued_jobs do
+      CallbacksJob.perform_later
+    end
+
+    assert_equal 3, CallbacksJob.callback_results.size
+  end
+
+  test 'sets current_exception and is available in callbacks' do
+    CallbacksJob.reset_results!
+
+    perform_enqueued_jobs do
+      CallbacksJob.perform_later
+    end
+
+    assert CallbacksJob.callback_results.map { |ex| StandardError === ex }.all?
+  end
+
   test 'raises exception when include in an ActiveJob with an adapter that does not support an enqueue_at method' do
     assert_raises RuntimeError do
       Class.new(ActiveJob::Base) do
-        self.queue_adapter = Class.new do
-          def enqueue
-          end
-        end.new
+        self.queue_adapter = Class.new { define_method(:enqueue) {} }.new
 
         include ActiveJob::Retriable
       end
