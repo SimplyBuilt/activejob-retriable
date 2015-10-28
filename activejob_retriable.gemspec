@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = ActiveJob::Retriable::VERSION
   s.authors     = ["Michael Coyne"]
   s.email       = ["mikeycgto@gmail.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of ActivejobRetriable."
-  s.description = "TODO: Description of ActivejobRetriable."
+  s.homepage    = "activejob-retriable.onsimplybuilt.com"
+  s.summary     = "Automatically retries jobs"
+  s.description = "This gem aims to mimic most of the functionality of Sidekiq's RetryJobs middleware."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
