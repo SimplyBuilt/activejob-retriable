@@ -7,17 +7,17 @@ RetryJobs middleware.
 
 ## Support
 
-Backends that support the retrying jobs are supported. A Runtime
+Backends that support the retrying of jobs are supported. A Runtime
 exception is raised if this concern is included in a job class
 with an unsupported backend.
 
 The gem has only been tested with the Sidekiq backend. Please submit
-pull-requests and issues for backends that are not functioning properly.
+pull-requests and issues for backends that do not function properly.
 
-## Rescue From Blocks
+## rescue_from Blocks With retry_job
 
 The motivation of this gem is to play nicely with existing `rescue_from`
-blocks within your job classes. If your `rescue_from` blocks call
+blocks within your job classes. If a `rescue_from` block makes calls to
 `retry_job` is it probably best to call this method if and only if
 `retries_exhausted?` is not `true`. Otherwise, your jobs may be retried
 indefinitely! See this [test job
