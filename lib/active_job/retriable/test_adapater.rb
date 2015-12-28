@@ -12,9 +12,16 @@ module ActiveJob
       end
 
       def process_job_and_data(job, job_data)
-        # class is added by the default TestAdapter for filtering purposes (rails5)
-        job_data.update 'class' => job.class
         job_data = job_data.with_indifferent_access
+
+        # TODO Why do we need job for assert methods and class for filtering?
+        # TODO Use job_to_hash in Rails5
+        job_data.update({
+          class: job.class,
+          job: job.class,
+          args: job.arguments,
+          queue: job.queue_name
+        })
 
         if perform_enqueued_jobs
           # Use perform_now instead of execute so all callbacks are invoked (ie: before_perform)
