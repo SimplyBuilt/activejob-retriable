@@ -1,24 +1,52 @@
 require 'test_helper'
 
 class ActiveJob::Retriable::TestAdapterTest < ActiveJob::TestCase
-  test 'enqueued_jobs have class defined' do
+  test 'enqueued_jobs have job defined' do
     NoopJob.perform_later
 
-    assert_equal NoopJob, enqueued_jobs.first['class']
+    assert_equal NoopJob, enqueued_jobs.first[:job]
   end
 
-  test 'performed_jobs has class defined' do
+  test 'performed_jobs has job defined' do
     perform_enqueued_jobs do
       NoopJob.perform_later
     end
 
-    assert_equal NoopJob, performed_jobs.first['class']
+    assert_equal NoopJob, performed_jobs.first[:job]
+  end
+
+  test 'enqueued_jobs have args defined' do
+    NoopJob.perform_later
+
+    assert_equal [], enqueued_jobs.first[:args]
+  end
+
+  test 'performed_jobs has args defined' do
+    perform_enqueued_jobs do
+      NoopJob.perform_later
+    end
+
+    assert_equal [], performed_jobs.first[:args]
+  end
+
+  test 'enqueued_jobs have queue defined' do
+    NoopJob.perform_later
+
+    assert_equal 'default', enqueued_jobs.first[:queue]
+  end
+
+  test 'performed_jobs has queue defined' do
+    perform_enqueued_jobs do
+      NoopJob.perform_later
+    end
+
+    assert_equal 'default', performed_jobs.first[:queue]
   end
 
   test 'enqueued jobs with wait have at defined' do
     NoopJob.set(wait: 1.hour).perform_later
 
-    refute_nil enqueued_jobs.first['at']
+    refute_nil enqueued_jobs.first[:at]
   end
 
   test 'performed jobs with wait have at defined' do
@@ -26,21 +54,7 @@ class ActiveJob::Retriable::TestAdapterTest < ActiveJob::TestCase
       NoopJob.set(wait: 1.hour).perform_later
     end
 
-    refute_nil performed_jobs.first['at']
-  end
-
-  test 'enqueued jobs have indifferent access' do
-    NoopJob.perform_later
-
-    assert_instance_of ActiveSupport::HashWithIndifferentAccess, enqueued_jobs.first
-  end
-
-  test 'performed jobs have indifferent access' do
-    perform_enqueued_jobs do
-      NoopJob.perform_later
-    end
-
-    assert_instance_of ActiveSupport::HashWithIndifferentAccess, performed_jobs.first
+    refute_nil performed_jobs.first[:at]
   end
 
   test 'test adapter handles assert_enqueued_with job option' do
@@ -55,14 +69,11 @@ class ActiveJob::Retriable::TestAdapterTest < ActiveJob::TestCase
     end
   end
 
-  # TODO This won't pass until Rails 5
-  #test 'test adapter handles assert_enqueued_with at option' do
-    #puts serialize_args_for_assertion(at: Date.tomorrow.noon)
-
-    #assert_enqueued_with at: Date.tomorrow.noon do
-      #NoopJob.set(wait_until: Date.tomorrow.noon).perform_later
-    #end
-  #end
+  test 'test adapter handles assert_enqueued_with at option' do
+    assert_enqueued_with at: Date.tomorrow.noon do
+      NoopJob.set(wait_until: Date.tomorrow.noon).perform_later
+    end
+  end
 
   test 'test adapter handles assert_enqueued_with queue option' do
     assert_enqueued_with queue: 'default' do
@@ -70,17 +81,9 @@ class ActiveJob::Retriable::TestAdapterTest < ActiveJob::TestCase
     end
   end
 
-  # TODO this won't pass till Rails 5
-  #test 'test adapter handles assert_performed_jobs filtering' do
-    #assert_enqueued_jobs 1, only: NoopJob do
-      #NoopJob.perform_later
-    #end
-  #end
-
-  test 'deserialize monkey patch sets retry_attempt' do
-    job_data = { 'job_class' => 'RescueJob', 'retry_attempt' => 12 }
-    job = RescueJob.deserialize(job_data)
-
-    assert_equal 12, job.retry_attempt
+  test 'test adapter handles assert_performed_jobs filtering' do
+    assert_enqueued_jobs 1, only: NoopJob do
+      NoopJob.perform_later
+    end
   end
 end

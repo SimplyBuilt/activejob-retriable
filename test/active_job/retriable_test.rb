@@ -25,7 +25,7 @@ class ActiveJob::RetriableTest < ActiveJob::TestCase
     end
 
     # Two jobs are performed with +at+ keys
-    assert_equal 2, performed_jobs.map { |job| job['at'] }.compact.size
+    assert_equal 2, performed_jobs.map { |job| job[:at] }.compact.size
   end
 
   test 'invokes all callbacks' do
