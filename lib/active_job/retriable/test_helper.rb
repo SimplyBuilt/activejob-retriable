@@ -9,7 +9,7 @@ module ActiveJob
         include ActiveJob::TestHelper
 
         def before_setup
-          super # setup ActiveJob::TestHelper
+          super
 
           # Initialize our custom adapter
           retriable_adapter = ActiveJob::Retriable::TestAdapter.new
@@ -26,11 +26,11 @@ module ActiveJob
           clear_enqueued_jobs
           clear_performed_jobs
         end
-      end
 
-      # NOTE we do not need our own after_teardown since the
-      # after_teardown in ActiveJob::TestHelper resets all the original
-      # adapters
+        def after_teardown
+          super
+        end
+      end
     end
   end
 end
