@@ -1,6 +1,4 @@
-class MaxJob < ActiveJob::Base
-  include ActiveJob::Retriable
-
+class MaxJob < ApplicationJob
   queue_as :default
   max_retry 10
 

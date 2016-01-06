@@ -1,6 +1,4 @@
-class RaiseJob < ActiveJob::Base
-  include ActiveJob::Retriable
-
+class RaiseJob < ApplicationJob
   queue_as :default
 
   def perform

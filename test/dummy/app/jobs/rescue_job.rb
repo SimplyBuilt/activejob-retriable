@@ -1,6 +1,4 @@
-class RescueJob < ActiveJob::Base
-  include ActiveJob::Retriable
-
+class RescueJob < ApplicationJob
   JobError = Class.new(StandardError)
 
   max_retry 3

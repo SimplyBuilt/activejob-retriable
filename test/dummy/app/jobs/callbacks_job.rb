@@ -1,5 +1,5 @@
-class CallbacksJob < ActiveJob::Base
-  include ActiveJob::Retriable
+class CallbacksJob < ApplicationJob
+  queue_as :default
 
   def self.callback_results
     @_callback_results ||= []
