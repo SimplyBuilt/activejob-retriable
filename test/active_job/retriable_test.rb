@@ -51,7 +51,8 @@ class ActiveJob::RetriableTest < ActiveJob::TestCase
   test 'raises exception when include in an ActiveJob with an adapter that does not support an enqueue_at method' do
     assert_raises RuntimeError do
       Class.new(ActiveJob::Base) do
-        self.queue_adapter = Class.new { define_method(:enqueue) {} }.new
+        # Set to an adapter known to not support scheduled jobs (no :enqueue_at support)
+        self.queue_adapter = :inline
 
         include ActiveJob::Retriable
       end

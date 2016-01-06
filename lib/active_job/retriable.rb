@@ -20,7 +20,7 @@ module ActiveJob
     end
 
     included do
-      raise 'Adapter does not support enqueue_at method' unless self.queue_adapter.respond_to?(:enqueue_at)
+      raise 'Adapter does not support enqueue_at method' if self.queue_adapter.method(:enqueue_at).arity < 0
 
       delegate :reraise_when_retry_exhausted?, to: 'ActiveJob::Retriable'
       define_callbacks :exception
