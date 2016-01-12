@@ -4,10 +4,11 @@ ActiveJob::Retriable
 [![Gem Version](https://badge.fury.io/rb/activejob-retriable.svg)](https://rubygems.org/gems/activejob-retriable)
 [![Build Status](https://travis-ci.org/SimplyBuilt/activejob-retriable.svg)](https://travis-ci.org/SimplyBuilt/activejob-retriable)
 
-Automatically retry failed jobs with an exponential back-off.
+Automatically retry failed ActiveJobs with an exponential back-off.
 
 This gem aims to mimic most of the functionality of Sidekiq's
-RetryJobs middleware.
+RetryJobs middleware but operates at the ActiveJob abstract
+layer.
 
 ## Support
 
