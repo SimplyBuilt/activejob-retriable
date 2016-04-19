@@ -10,6 +10,37 @@ This gem aims to mimic most of the functionality of Sidekiq's
 RetryJobs middleware but operates at the ActiveJob abstract
 layer.
 
+## Installation
+
+To install the gem, add the following to your Gemfile:
+
+    gem "activejob-retriable"
+    
+If you're using Rails 5, use the branch master off Github for support. Once the first stable release of
+Rails 5 is out we will push a 5.0 version of gem.
+
+    gem "activejob-retriable", github: "SimplyBuilt/activejob-retriable"
+    
+## Usage
+
+The simplest way to use this gem is to include the following your `ApplicationJob` class
+
+    class ApplicationJob < ActiveJob::Base
+      include ActiveJob::Retriable
+    end
+
+A `max_retry` class method as well as before, after and around exception callbacks
+will now be available to all your Jobs. For example:
+
+    class MyJob < ApplicationJob
+      max_retry 12
+      
+      after_exception do
+        # Record exeception to our fictitious error service
+        ErrorNotify.dispatch current_exception
+      end
+    end
+
 ## Support
 
 Backends that support the retrying of jobs are supported. A Runtime
