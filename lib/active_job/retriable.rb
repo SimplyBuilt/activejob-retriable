@@ -37,7 +37,7 @@ module ActiveJob
           if retries_exhausted?
             logger.info "[#{base}] [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
 
-            raise if reraise_when_retry_exhausted?
+            raise ex if reraise_when_retry_exhausted?
           else
             logger.warn "[#{base}] [#{job_id}] Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
 
