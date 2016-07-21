@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activejob-retriable (5.0.0)
+    activejob-retriable (5.0.1)
       activejob (~> 5.0)
 
 GEM
@@ -155,4 +155,4 @@ DEPENDENCIES
   sqlite3 (~> 1.3)
 
 BUNDLED WITH
-   1.11.2
+   1.12.2
