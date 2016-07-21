@@ -7,7 +7,7 @@ require 'active_job/retriable/version'
 Gem::Specification.new do |s|
   s.name        = 'activejob-retriable'
   s.version     = ActiveJob::Retriable::VERSION
-  s.authors     = ['Michael Coyne']
+  s.authors     = ['Michael Coyne', 'Cameron Craig', 'SimplyBuilt']
   s.email       = ['mikeycgto@gmail.com']
   s.homepage    = 'https://github.com/SimplyBuilt/activejob-retriable'
   s.summary     = 'Automatically retry failed jobs.'
