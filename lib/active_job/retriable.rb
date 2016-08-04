@@ -25,7 +25,7 @@ module ActiveJob
       delegate :reraise_when_retry_exhausted?, to: 'ActiveJob::Retriable'
       define_callbacks :exception
 
-      base = "[#{BASE_TAG}] [#{self.class.name}]"
+      log_tags = "[#{BASE_TAG}] [#{self.class.to_s}]"
 
       # TODO think about how to handle ActiveJob::DeserializationError
       rescue_from Exception do |ex|
@@ -35,11 +35,11 @@ module ActiveJob
         # with recursively tagged logs in when in test mode
         run_callbacks :exception do
           if retries_exhausted?
-            logger.info "[#{base}] [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
+            logger.info "#{log_tags} [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
 
             raise ex if reraise_when_retry_exhausted?
           else
-            logger.warn "[#{base}] [#{job_id}] Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
+            logger.warn "#{log_tags} [#{job_id}] Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
 
             retry_job wait: retry_delay
           end
