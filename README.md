@@ -15,12 +15,12 @@ layer.
 To install the gem, add the following to your Gemfile:
 
     gem "activejob-retriable"
-    
+
 If you're using Rails 5, use the branch master off Github for support. Once the first stable release of
 Rails 5 is out we will push a 5.0 version of gem.
 
     gem "activejob-retriable", github: "SimplyBuilt/activejob-retriable"
-    
+
 ## Usage
 
 The simplest way to use this gem is to include the following your `ApplicationJob` class
@@ -34,7 +34,7 @@ will now be available to all your Jobs. For example:
 
     class MyJob < ApplicationJob
       max_retry 12
-      
+
       after_exception do
         # Record exeception to our fictitious error service
         ErrorNotify.dispatch current_exception
@@ -121,14 +121,22 @@ basis.
    sure to include the test helper concern there as well!
 
 4. *Optionally* add a setup and teardown block to toggle on
-   `reraise_when_retry_exhausted`
+   `reraise_when_retry_exhausted`, `print_exceptions_to_stderr` and
+`print_exception_backtraces_to_stderr`. These features are useful when
+testing and debugging Active Jobs that raise exceptions or have syntax
+errors.
 
         setup do
           ActiveJob::Retriable.reraise_when_retry_exhausted = true
+          ActiveJob::Retriable.print_exceptions_to_stderr   = true
+
+          # Or with a full backtrace...
+          # ActiveJob::Retriable.print_exceptions_to_stderr   = :backtrace
         end
 
         teardown do
           ActiveJob::Retriable.reraise_when_retry_exhausted = false
+          ActiveJob::Retriable.print_exceptions_to_stderr   = false
         end
 
 Additionally, if you have jobs being enqueued in your `setup` blocks, it

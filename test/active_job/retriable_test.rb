@@ -58,4 +58,30 @@ class ActiveJob::RetriableTest < ActiveJob::TestCase
       end
     end
   end
+
+  test 'reraise on exceptions' do
+    ActiveJob::Retriable.reraise_when_retry_exhausted = true
+
+    assert_raises StandardError do
+      perform_enqueued_jobs do
+        RaiseJob.perform_later
+      end
+    end
+
+    ActiveJob::Retriable.reraise_when_retry_exhausted = false
+  end
+
+  test 'print to stderr on exceptions' do
+    errs = capture_stderr do
+      ActiveJob::Retriable.print_exceptions_to_stderr = true
+
+      perform_enqueued_jobs do
+        RaiseJob.perform_later
+      end
+
+      ActiveJob::Retriable.print_exceptions_to_stderr = false
+    end
+
+    assert_equal 25, errs.split("\n").size
+  end
 end

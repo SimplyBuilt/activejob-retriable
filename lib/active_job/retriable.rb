@@ -10,22 +10,38 @@ module ActiveJob
     DEFAULT_MAX    = 25
 
     @reraise_when_retry_exhausted = false
+    @print_exceptions_to_stderr = false
 
     def self.reraise_when_retry_exhausted=(option)
       @reraise_when_retry_exhausted = !!option
+    end
+
+    def self.print_exceptions_to_stderr=(option)
+      @print_exceptions_to_stderr = !!option
+      @print_exception_backtraces_to_stderr = option == :backtrace
     end
 
     def self.reraise_when_retry_exhausted?
       @reraise_when_retry_exhausted
     end
 
+    def self.print_exceptions_to_stderr?
+      @print_exceptions_to_stderr
+    end
+
+    def self.print_exception_backtraces_to_stderr?
+      @print_exception_backtraces_to_stderr
+    end
+
     included do
       raise 'Adapter does not support enqueue_at method' if self.queue_adapter.method(:enqueue_at).arity < 0
 
-      delegate :reraise_when_retry_exhausted?, to: 'ActiveJob::Retriable'
-      define_callbacks :exception
-
       log_tags = "[#{BASE_TAG}] [#{self.class.to_s}]"
+
+      delegate :reraise_when_retry_exhausted?, :print_exceptions_to_stderr?,
+        :print_exception_backtraces_to_stderr?, to: 'ActiveJob::Retriable'
+
+      define_callbacks :exception
 
       # TODO think about how to handle ActiveJob::DeserializationError
       rescue_from Exception do |ex|
@@ -34,6 +50,11 @@ module ActiveJob
         # Avoid using the tag_logger method so we don't end up
         # with recursively tagged logs in when in test mode
         run_callbacks :exception do
+          if print_exceptions_to_stderr?
+            $stderr.puts "#{ex.class}: #{ex.message}"
+            $stderr.puts ex.backtrace.join("\n") if print_exception_backtraces_to_stderr?
+          end
+
           if retries_exhausted?
             logger.info "#{log_tags} [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
 

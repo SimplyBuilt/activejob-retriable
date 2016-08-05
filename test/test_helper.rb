@@ -22,4 +22,16 @@ require 'active_job/retriable/test_helper'
 
 class ActiveJob::TestCase
   include ActiveJob::Retriable::TestHelper
+
+  def capture_stderr
+    begin
+      original_stderr = $stderr
+
+      $stderr = StringIO.new('', 'w')
+      yield
+      $stderr.string
+    ensure
+      $stderr = original_stderr
+    end
+  end
 end
