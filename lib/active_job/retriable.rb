@@ -5,7 +5,8 @@ module ActiveJob
     extend ActiveSupport::Concern
     include ActiveSupport::Callbacks
 
-    BASE_TAG = self.name
+    BASE_TAG = "[#{self.name}]".freeze
+
     DEFAULT_FACTOR = 4
     DEFAULT_MAX    = 25
 
@@ -36,8 +37,6 @@ module ActiveJob
     included do
       raise 'Adapter does not support enqueue_at method' if self.queue_adapter.method(:enqueue_at).arity < 0
 
-      log_tags = "[#{BASE_TAG}] [#{self.class.to_s}]"
-
       delegate :reraise_when_retry_exhausted?, :print_exceptions_to_stderr?,
         :print_exception_backtraces_to_stderr?, to: 'ActiveJob::Retriable'
 
@@ -50,17 +49,19 @@ module ActiveJob
         # Avoid using the tag_logger method so we don't end up
         # with recursively tagged logs in when in test mode
         run_callbacks :exception do
+          log_tags = "#{BASE_TAG} [#{self.class}] [#{job_id}]"
+
           if print_exceptions_to_stderr?
             $stderr.puts "#{ex.class}: #{ex.message}"
             $stderr.puts ex.backtrace.join("\n") if print_exception_backtraces_to_stderr?
           end
 
           if retries_exhausted?
-            logger.info "#{log_tags} [#{job_id}] Retries exhauseted at #{retry_attempt} attempts"
+            logger.info "#{log_tags} Retries exhauseted at #{retry_attempt} attempts"
 
             raise ex if reraise_when_retry_exhausted?
           else
-            logger.warn "#{log_tags} [#{job_id}] Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
+            logger.warn "#{log_tags} Retrying due to #{ex.class.name} #{ex.message} on #{ex.backtrace.try(:first)} (attempted #{retry_attempt})"
 
             retry_job wait: retry_delay
           end
