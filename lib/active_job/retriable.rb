@@ -42,7 +42,6 @@ module ActiveJob
 
       define_callbacks :exception
 
-      # TODO think about how to handle ActiveJob::DeserializationError
       rescue_from Exception do |ex|
         self.current_exception = ex
 
@@ -56,7 +55,10 @@ module ActiveJob
             $stderr.puts ex.backtrace.join("\n") if print_exception_backtraces_to_stderr?
           end
 
-          if retries_exhausted?
+          if ActiveJob::DeserializationError === ex
+            logger.info "Aborting retry due to DeserializationError: #{ex.message}"
+
+          elsif retries_exhausted?
             logger.info "#{log_tags} Retries exhauseted at #{retry_attempt} attempts"
 
             raise ex if reraise_when_retry_exhausted?
