@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activejob-retriable (5.0.3)
+    activejob-retriable (5.0.4)
       activejob (~> 5.0)
 
 GEM
