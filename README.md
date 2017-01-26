@@ -3,6 +3,7 @@ ActiveJob::Retriable
 
 [![Build Status](https://travis-ci.org/SimplyBuilt/activejob-retriable.svg)](https://travis-ci.org/SimplyBuilt/activejob-retriable)
 [![Gem Version](https://badge.fury.io/rb/activejob-retriable.svg)](https://rubygems.org/gems/activejob-retriable)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 Automatically retry failed ActiveJobs with an exponential back-off.
 
