@@ -7,9 +7,8 @@ ActiveJob::Retriable
 
 Automatically retry failed ActiveJobs with an exponential back-off.
 
-This gem aims to mimic most of the functionality of Sidekiq's
-RetryJobs middleware but operates at the ActiveJob abstract
-layer.
+This gem aims to mimic most of the functionality of Sidekiq's `RetryJobs` middleware but operates on
+the ActiveJob layer.
 
 ## Installation
 
