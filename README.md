@@ -14,38 +14,48 @@ the ActiveJob layer.
 
 To install the gem, add the following to your Gemfile:
 
-    gem "activejob-retriable"
+```ruby
+gem "activejob-retriable"
+```
 
-If you're using Rails 5, use the branch master off Github for support. Once the first stable release of
-Rails 5 is out we will push a 5.0 version of gem.
+If you're using Rails 5, use the branch master off Github for support.
+Once the first stable release of Rails 5 is out we will push a 5.0
+version of gem.
 
-    gem "activejob-retriable", github: "SimplyBuilt/activejob-retriable"
+```ruby
+gem "activejob-retriable", github: "SimplyBuilt/activejob-retriable"
+```
 
 ## Usage
 
-The simplest way to use this gem is to include the following your `ApplicationJob` class
+The simplest way to use this gem is to include the following your
+`ApplicationJob` class
 
-    class ApplicationJob < ActiveJob::Base
-      include ActiveJob::Retriable
-    end
+```ruby
+class ApplicationJob < ActiveJob::Base
+  include ActiveJob::Retriable
+end
+```
 
 A `max_retry` class method as well as before, after and around exception callbacks
 will now be available to all your Jobs. For example:
 
-    class MyJob < ApplicationJob
-      max_retry 12
+```ruby
+class MyJob < ApplicationJob
+  max_retry 12
 
-      after_exception do
-        # Record exeception to our fictitious error service
-        ErrorNotify.dispatch current_exception
-      end
-    end
+  after_exception do
+    # Record exeception to our fictitious error service
+    ErrorNotify.dispatch current_exception
+  end
+end
+```
 
 ## Support
 
 Backends that support the retrying of jobs are supported. A Runtime
-exception is raised if this concern is included in a job class
-with an unsupported backend.
+exception is raised if this concern is included in a job class with an
+unsupported backend.
 
 The gem has only been tested with the Sidekiq backend. Please submit
 pull-requests and issues for backends that do not function properly.
@@ -77,11 +87,13 @@ If you want `ActionMailer` delivery jobs to use `Retriable`, you have to
 reopen the `ActionMailer::DeliveryJob` class and manually include the
 concern. For example:
 
-    module ActionMailer
-      class DeliveryJob
-        include ActiveJob::Retriable
-      end
-    end
+```ruby
+module ActionMailer
+  class DeliveryJob
+    include ActiveJob::Retriable
+  end
+end
+```
 
 It is recommended to do this via an initializer. We're open to
 suggestions on how to improve this aspect of `Retriable` though!
@@ -106,13 +118,18 @@ following:
 
 1. Include the `ActiveJob::Retriable::TestHelper` in your `test_helper.rb`
 
-        require 'active_job/retriable/test_helper'
+```ruby
+require 'active_job/retriable/test_helper'
+```
 
 2. Reopen `ActiveJob::TestCase` and include the helper
 
-        class ActiveJob::TestCase
-          include ActiveJob::Retriable::TestHelper
-        end
+
+```ruby
+class ActiveJob::TestCase
+  include ActiveJob::Retriable::TestHelper
+end
+```
 
    Alternatively, you can just include the helper on a test-by-test
 basis.
@@ -126,18 +143,20 @@ basis.
 testing and debugging Active Jobs that raise exceptions or have syntax
 errors.
 
-        setup do
-          ActiveJob::Retriable.reraise_when_retry_exhausted = true
-          ActiveJob::Retriable.print_exceptions_to_stderr   = true
+```ruby
+setup do
+  ActiveJob::Retriable.reraise_when_retry_exhausted = true
+  ActiveJob::Retriable.print_exceptions_to_stderr   = true
 
-          # Or with a full backtrace...
-          # ActiveJob::Retriable.print_exceptions_to_stderr   = :backtrace
-        end
+  # Or with a full backtrace...
+  # ActiveJob::Retriable.print_exceptions_to_stderr   = :backtrace
+end
 
-        teardown do
-          ActiveJob::Retriable.reraise_when_retry_exhausted = false
-          ActiveJob::Retriable.print_exceptions_to_stderr   = false
-        end
+teardown do
+  ActiveJob::Retriable.reraise_when_retry_exhausted = false
+  ActiveJob::Retriable.print_exceptions_to_stderr   = false
+end
+```
 
 Additionally, if you have jobs being enqueued in your `setup` blocks, it
 is highly recommended that you move that functionality to an
@@ -149,10 +168,11 @@ and may change in the future.
 - With **Sidekiq**, we highly encourage that you remove the RetryJobs
   middleware. This can be done in an initializer with the following:
 
-        Sidekiq.configure_server do |config|
-          config.server_middleware.remove Sidekiq::Middleware::Server::RetryJobs
-        end
-
+```ruby
+Sidekiq.configure_server do |config|
+  config.server_middleware.remove Sidekiq::Middleware::Server::RetryJobs
+end
+```
 
 ## LICENSE
 
